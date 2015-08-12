@@ -71,6 +71,7 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
 			$scope.location.latitude = loc.G;
 			$scope.location.longitude = loc.K;
 			$scope.limit = d ;
+			console.log(map.center, ne);
 			$scope.getDataFromApi($scope.location.latitude,$scope.location.longitude,$scope.limit) ;
 		});
 
@@ -87,6 +88,7 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
 				Math.sin(dLong / 2) * Math.sin(dLong / 2);
 			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 			var d = (R * c) ;
+			console.log(p1.lat(), p2.lat());
 			return d; // returns the distance in meters
 		}
 

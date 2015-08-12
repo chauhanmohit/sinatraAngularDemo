@@ -1,17 +1,17 @@
 <<<<<<< HEAD
 ## yo!
 
-This is just a simple blog, which uses Sinatra + PostgreSQL + Heroku + ActiveRecord + Tux + Bootstrap: [http://sinatra-sings.herokuapp.com/](http://sinatra-sings.herokuapp.com/)
-
+This is just a simple sinatra app demo using google map , angularjs , scorata/soda gem with sinatra . 
+- demo(url) the (https://stagingcrimereports.herokuapp.com/)
 ##### Want to view the tutorial on how I built it? 
 
-- Yes? View the [tutorial](http://mherman.org/blog/2013/06/08/designing-with-class-sinatra-plus-postgresql-plus-heroku/) on my blog (upated may 4, 2013); check out how to add a [captcha](http://mherman.org/blog/2014/05/04/adding-a-captcha-to-sinatra-to-minimize-spam)
+- Yes? View the [tutorial](https://github.com/chauhanmohit/sinatraAngularDemo) 
 - No ...
 
 ##### Well, at the very least, download the app and add some features (editing/deleting posts, user login/logout/authentication)
 
-    $ git clone https://github.com/mjhea0/sinatra-blog
-    $ cd sinatra-blog
+    $ git clone https://github.com/chauhanmohit/sinatraAngularDemo.git
+    $ cd sinatraAngularDemo
     $ bundle install
     $ ruby app.rb                 
 
@@ -22,6 +22,6 @@ Fork. Star. Applaud. Build.
 =======
 Sinatra
 =======
-
+   
 Sinatra
 >>>>>>> 8d48dcc203a885a173834243a2396594ca92db84
