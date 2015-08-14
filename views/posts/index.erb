@@ -4,7 +4,7 @@
 <img src="loader/loader.gif" alt="loader"/>
 </div>
 <div class="row">
-                <center>
+                <center>     
                     <div class="col-sm-3">
                         <div class="form-group">
                             <label>Address</label>
@@ -18,52 +18,5 @@
                 </center>
             </div>
                 <map center="{{location.latitude ? location.latitude : 41.8838113 }},{{location.longitude ? location.longitude : -87.6317489 }}" zoom="19" style ="height:600px">
-                    
-                    <info-window id="foo">
-                        <div ng-non-bindable="">
-                            <div class="CustomData">
-                                <div class="row">
-                                    <div class="col-sm-6"><strong>Arrest</strong>:</div>
-                                    <div class="col-sm-3">{{des.arrest}}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-6"><strong>Beat</strong>:</div>
-                                    <div class="col-sm-3">{{des.beat}}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-6"><strong>Case Number</strong>:</div>
-                                    <div class="col-sm-3">{{des.case_number}}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-6"><strong>Date</strong>:</div>
-                                    <div class="col-sm-3">{{des.date}}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-6"><strong>Description</strong>:</div>
-                                    <div class="col-sm-3">{{des.description}}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-6"><strong>Domestic</strong>:</div>
-                                    <div class="col-sm-3">{{des.domestic}}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-6"><strong>Fbi Code</strong>:</div>
-                                    <div class="col-sm-3">{{des.fbi_code}}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-6"><strong>Description</strong>:</div>
-                                    <div class="col-sm-3">{{des.description}}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-6"><strong>Primary Type</strong>:</div>
-                                    <div class="col-sm-3">{{des.primary_type}}</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-6"><strong>Year</strong>:</div>
-                                    <div class="col-sm-3">{{des.arrest}}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </info-window>
                 </map>
  </section>
