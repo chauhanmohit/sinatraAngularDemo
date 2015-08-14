@@ -21,20 +21,6 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
                 $scope.getDataFromApi($scope.location.latitude,$scope.location.longitude,$scope.limit) ;
             });
         }
-                
-        $scope.getDataFromApi = function(lat,lang,limit){
-	    if (!limit) {
-		limit = 100 ;
-	    }
-	    $scope.showLoder = true ;
-            $http.get('/showData?lat='+lat+'&lang='+lang+'&limit='+limit)
-            .success(function(res,status,config,header){
-		$scope.shortlistedData = res ;
-		$scope.showLoder = false ;
-            }).error(function(err,status,config,header){
-                console.log("Error comes in this section");
-            });
-        }
 
 	google.maps.event.addListener(map, "dragend", function() {
 	    var zoomLevel = map.getZoom();
@@ -46,21 +32,8 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
 	    $scope.location.latitude = loc.G;
 	    $scope.location.longitude = loc.K;
 	    $scope.limit = d ;
-	    $scope.getDataFromApi($scope.location.latitude,$scope.location.longitude,$scope.limit) ;
+	    getData($scope.limit,map) ;
 	});
-	
-	//google.maps.event.addListener(map, 'zoom_changed', function() {
-	//    var zoomLevel = map.getZoom();
-	//    var bounds = map.getBounds();
-	//    var ne = bounds.getNorthEast();
-	//    var sw = bounds.getSouthWest();
-	//    var d = getDistance(map.center, ne);
-	//    var loc = map.center ;	
-	//    $scope.location.latitude = loc.G;
-	//    $scope.location.longitude = loc.K;
-	//    $scope.limit = d ;
-	//    $scope.getDataFromApi($scope.location.latitude,$scope.location.longitude,$scope.limit) ;
-	//});
 	
 	var rad = function(x) {
 		return x * Math.PI / 180;
