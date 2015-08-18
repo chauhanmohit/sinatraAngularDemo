@@ -43,7 +43,7 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
 	bermudaTriangle.setMap(map)
 	
 	google.maps.event.addListener(map, "dragend", function() {
-	    boundryLimit(map);
+	    //boundryLimit(map);
 	    var zoomLevel = map.getZoom();
 	    var bounds = map.getBounds();
 	    var ne = bounds.getNorthEast();
