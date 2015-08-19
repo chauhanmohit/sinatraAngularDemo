@@ -51,7 +51,7 @@ app.controller('mainController',['$scope','MapService','$http','$q','$timeout',f
 		$scope.location.latitude = loc.G;
 		$scope.location.longitude = loc.K;
 		$scope.limit = d ;
-		//getData($scope.limit,map) ;
+		getData($scope.limit,map) ;
 	    }
 	});
 	
