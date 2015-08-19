@@ -1,5 +1,5 @@
 'use strict'
-app.controller('mainController',['$scope','MapService','$http',function($scope,MapService,$http){
+app.controller('mainController',['$scope','MapService','$http','$q','$timeout',function($scope,MapService,$http,$q,$timeout){
     $scope.location = {} ;
     $scope.newPlaceAddress = "Chicago" ;
     $scope.location.latitude = 41.8838113 ;
@@ -7,14 +7,15 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
     $scope.limit = 100 ;
     $scope.showLoder = false ;
     $scope.dynMarkers = [];
-     
+    $scope.requestCounter = 0 ;
+    var canceller ;
+    
     $scope.$on('mapInitialized', function(event, map) {
 	var marker ;
 	var infowindow ;
 	var minZoomLevel = 10;
 	getData($scope.limit,map);
-
-  
+    
 	$scope.getAddress = function(){
             var address = $scope.newPlaceAddress ? $scope.newPlaceAddress : "Chicago" ;
             MapService.geocodeAddress(address).then(function (location) {
@@ -23,28 +24,9 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
                 $scope.getDataFromApi($scope.location.latitude,$scope.location.longitude,$scope.limit) ;
             });
         }
-	var allowedBounds = [
-		    {lat:42.0203316, lng:-87.6658357},
-		    {lat:41.979963, lng:-87.9396229},
-		    {lat:41.7843619, lng:-87.8011017},
-		    {lat:41.6858761, lng:-87.7396083},
-		    {lat:41.6466334, lng:-87.5283502},
-		    {lat:41.8954732, lng:-87.6079243},
-		    ] ;
-		
-	var bermudaTriangle = new google.maps.Polygon({
-	    paths: allowedBounds,
-	    strokeColor: '#FF0000',
-	    strokeOpacity: 0.3,
-	    strokeWeight: 2,
-	    fillColor: '#FF0000',
-	    fillOpacity: 0.15
-	});
-	bermudaTriangle.setMap(map)
 	
 	google.maps.event.addListener(map, "dragend", function() {
-	    //boundryLimit(map);
-	    var zoomLevel = map.getZoom();
+ 	    var zoomLevel = map.getZoom();
 	    var bounds = map.getBounds();
 	    var ne = bounds.getNorthEast();
 	    var sw = bounds.getSouthWest();
@@ -53,7 +35,8 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
 	    $scope.location.latitude = loc.G;
 	    $scope.location.longitude = loc.K;
 	    $scope.limit = d ;
-	    getData($scope.limit,map) ;
+	    getData($scope.limit,map);
+	    
 	});
 	
 	google.maps.event.addListener(map, 'zoom_changed', function() {
@@ -68,34 +51,10 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
 		$scope.location.latitude = loc.G;
 		$scope.location.longitude = loc.K;
 		$scope.limit = d ;
-		getData($scope.limit,map) ;
+		//getData($scope.limit,map) ;
 	    }
 	});
 
-	var boundryLimit = function(){
-	    var allowedBounds = new google.maps.LatLngBounds(
-		    new google.maps.LatLng(41.8985364, -87.7919738),
-		    new google.maps.LatLng(42.0230494, -87.7957267),
-		    new google.maps.LatLng(42.0205603, -87.6951688),
-		    new google.maps.LatLng(41.6480887, -87.5369138)
-		) ;
-	    if (allowedBounds.contains(map.getCenter())) return;
-	    var c = map.getCenter(),
-		x = c.lng(),
-		y = c.lat(),
-		maxX = allowedBounds.getNorthEast().lng(),
-		maxY = allowedBounds.getNorthEast().lat(),
-		minX = allowedBounds.getSouthWest().lng(),
-		minY = allowedBounds.getSouthWest().lat();
-       
-	    if (x < minX) x = minX;
-	    if (x > maxX) x = maxX;
-	    if (y < minY) y = minY;
-	    if (y > maxY) y = maxY;
-       
-	    map.setCenter(new google.maps.LatLng(y, x));
-	}
-	
 	var rad = function(x) {
 		return x * Math.PI / 180;
 	};
@@ -112,22 +71,18 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
 		return d; // returns the distance in meters
 	}
 	
-		
-	
     });
-    
 
-	
     function getData(limit,evtmap){
 	if (!limit) {
 	    limit = 100
 	}
 	var map = evtmap ;
+	if (canceller) canceller.resolve("User Intrupt");
+	canceller = $q.defer();
 	$scope.showLoder = true ;
-	$http.get('/showData?lat='+$scope.location.latitude+'&lang='+$scope.location.longitude+'&limit='+limit)
+	$http.get('/showData?lat='+$scope.location.latitude+'&lang='+$scope.location.longitude+'&limit='+limit, { timeout: canceller.promise })
 	.success(function(res,status,config,header){
-	    //console.log("the data is as follows", res, res.length);
-	    //$scope.shortlistedData = res ;
 	    for(var i=0; i<res.length; i++){
 		var latLng = new google.maps.LatLng(res[i].latitude, res[i].longitude);
 		var image = res[i].primary_type == 'ASSAULT' ? 'img/matrimonial.png' : res[i].primary_type == 'NARCOTICS' ? 'img/medical.png' : res[i].primary_type == 'BATTERY' ? 'img/local-services.png' : 'img/saloon.png' ;
@@ -140,10 +95,15 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
 		bindInfoWindow(marker, map,infowindow, res[i]);
 		$scope.dynMarkers.push(marker);
 	    }
-	    $scope.markerClusterer = new MarkerClusterer(map, $scope.dynMarkers, {});
+	    var mcOptions = {gridSize: 50, maxZoom: 20};
+	    $scope.markerClusterer = new MarkerClusterer(map, $scope.dynMarkers, mcOptions);
 	    $scope.showLoder = false ;
 	}).error(function(err,status,config,header){
-	    console.log("Error comes in this section");
+	    $scope.showLoder = false ;
+	    $timeout(function(){
+		$scope.showLoder = true ;
+	    },500);
+	    console.log("Error comes in this section", err,status);
 	});
     }
 
@@ -172,11 +132,7 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
                                 '</div>'+
                                 '<div class="row">'+
                                     '<div class="col-sm-6"><strong>Date</strong>:</div>'+
-                                    '<div class="col-sm-3">'+ data.date + '</div>'+
-                                '</div>'+
-                                '<div class="row">'+
-                                    '<div class="col-sm-6"><strong>Description</strong>:</div>'+
-                                    '<div class="col-sm-3">'+ data.description + '</div>'+
+                                    '<div class="col-sm-6">'+ new Date(data.date) + '</div>'+
                                 '</div>'+
                                 '<div class="row">'+
                                     '<div class="col-sm-6"><strong>Domestic</strong>:</div>'+
@@ -188,7 +144,7 @@ app.controller('mainController',['$scope','MapService','$http',function($scope,M
                                 '</div>'+
                                 '<div class="row">'+
                                     '<div class="col-sm-6"><strong>Description</strong>:</div>'+
-                                    '<div class="col-sm-3">'+ data.description + '</div>'+
+                                    '<div class="col-sm-6">'+ data.description + '</div>'+
                                 '</div>'+
                                 '<div class="row">'+
                                     '<div class="col-sm-6"><strong>Primary Type</strong>:</div>'+

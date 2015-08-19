@@ -20,3 +20,7 @@ body{
     top: 25%;
     z-index: 99999;
 }
+
+.CustomData {
+    width: 95%;
+}
