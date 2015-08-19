@@ -51,10 +51,10 @@ app.controller('mainController',['$scope','MapService','$http','$q','$timeout',f
 		$scope.location.latitude = loc.G;
 		$scope.location.longitude = loc.K;
 		$scope.limit = d ;
-		getData($scope.limit,map) ;
+		//getData($scope.limit,map) ;
 	    }
 	});
-
+	
 	var rad = function(x) {
 		return x * Math.PI / 180;
 	};
@@ -70,7 +70,6 @@ app.controller('mainController',['$scope','MapService','$http','$q','$timeout',f
 		var d = (R * c) ;
 		return d; // returns the distance in meters
 	}
-	
     });
 
     function getData(limit,evtmap){
@@ -83,6 +82,7 @@ app.controller('mainController',['$scope','MapService','$http','$q','$timeout',f
 	$scope.showLoder = true ;
 	$http.get('/showData?lat='+$scope.location.latitude+'&lang='+$scope.location.longitude+'&limit='+limit, { timeout: canceller.promise })
 	.success(function(res,status,config,header){
+	    console.log("the length is", res.length);
 	    for(var i=0; i<res.length; i++){
 		var latLng = new google.maps.LatLng(res[i].latitude, res[i].longitude);
 		var image = res[i].primary_type == 'ASSAULT' ? 'img/matrimonial.png' : res[i].primary_type == 'NARCOTICS' ? 'img/medical.png' : res[i].primary_type == 'BATTERY' ? 'img/local-services.png' : 'img/saloon.png' ;
@@ -95,7 +95,18 @@ app.controller('mainController',['$scope','MapService','$http','$q','$timeout',f
 		bindInfoWindow(marker, map,infowindow, res[i]);
 		$scope.dynMarkers.push(marker);
 	    }
-	    var mcOptions = {gridSize: 50, maxZoom: 20};
+	    
+	    var mcOptions = {
+				gridSize: 50,
+				maxZoom: 20,
+				styles: [{
+					    textColor: "white",
+					    height: 45,
+					    url: "markercluster/tran_b.png",
+					    width: 45
+					}]
+			    };
+	    
 	    $scope.markerClusterer = new MarkerClusterer(map, $scope.dynMarkers, mcOptions);
 	    $scope.showLoder = false ;
 	}).error(function(err,status,config,header){
